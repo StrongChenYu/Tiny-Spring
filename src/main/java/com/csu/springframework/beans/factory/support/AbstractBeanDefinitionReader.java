@@ -23,13 +23,12 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 
     @Override
     public BeanDefinitionRegistry getRegistry() {
-        return null;
+        return registry;
     }
 
     @Override
     public ResourceLoader getResourceLoader() {
-        return null;
+        return resourceLoader;
     }
-
 
 }

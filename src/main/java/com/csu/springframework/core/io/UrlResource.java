@@ -23,7 +23,7 @@ public class UrlResource implements Resource {
         URLConnection con = this.url.openConnection();
 
         try {
-            return con.getInputStream();
+            return con. getInputStream();
         } catch (Exception e) {
             if (con instanceof HttpURLConnection) {
                 ((HttpURLConnection) con).disconnect();

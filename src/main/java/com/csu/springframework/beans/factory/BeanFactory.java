@@ -1,4 +1,4 @@
-package com.csu.springframework.test.beans.factory;
+package com.csu.springframework.beans.factory;
 
 
 public interface BeanFactory {

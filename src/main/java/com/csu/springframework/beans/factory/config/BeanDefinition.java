@@ -1,6 +1,6 @@
-package com.csu.springframework.test.beans.factory.config;
+package com.csu.springframework.beans.factory.config;
 
-import com.csu.springframework.test.beans.PropertyValues;
+import com.csu.springframework.beans.PropertyValues;
 
 public class BeanDefinition {
 

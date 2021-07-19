@@ -1,4 +1,4 @@
-package com.csu.springframework.test.beans;
+package com.csu.springframework.beans;
 
 public class PropertyValue {
 

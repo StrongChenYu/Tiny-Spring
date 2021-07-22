@@ -55,6 +55,12 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
         loadBeanDefinition(resource);
     }
 
+    public void loadBeanDefinition(String[] configLocations) {
+        for (String configLocation : configLocations) {
+            loadBeanDefinition(configLocation);
+        }
+    }
+
 
     protected void doLoadBeanDefinitions(InputStream inputStream) throws ClassNotFoundException{
         Document document = XmlUtil.readXML(inputStream);

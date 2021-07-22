@@ -4,13 +4,15 @@ import cn.hutool.core.bean.BeanUtil;
 import com.csu.springframework.beans.BeansException;
 import com.csu.springframework.beans.PropertyValue;
 import com.csu.springframework.beans.PropertyValues;
+import com.csu.springframework.beans.factory.AutowireCapableBeanFactory;
 import com.csu.springframework.beans.factory.config.BeanDefinition;
+import com.csu.springframework.beans.factory.config.BeanPostProcessor;
 import com.csu.springframework.beans.factory.config.BeanReference;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory {
+public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
 
     private final InstantiationStrategy instantiationStrategy = new CglibSubclassingInstantiationStrategy();
 
@@ -24,6 +26,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
             //support bean property
             applyPropertyValues(beanName, bean, beanDefinition);
+
+             bean = initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
             throw new BeansException("Instantiation of bean failed", e);
         }
@@ -31,6 +35,24 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         addSingleton(beanName, bean);
         return bean;
     }
+
+    private Object initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) {
+        //前置处理
+        Object wrappedBean = applyBeanPostProcessorsBeforeInitialization(bean, beanName);
+
+        //调用初始化方法
+        invokeInitMethods(beanName, wrappedBean, beanDefinition);
+
+        //后置处理
+        wrappedBean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+
+        return wrappedBean;
+    }
+
+    protected void invokeInitMethods(String beanName, Object wrappedBean, BeanDefinition beanDefinition) {
+
+    }
+
 
     private void applyPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
         PropertyValues propertyValues = beanDefinition.getPropertyValues();
@@ -109,5 +131,34 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     public InstantiationStrategy getInstantiationStrategy() {
         return instantiationStrategy;
     }
+
+    public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName) throws BeansException {
+        Object bean = existingBean;
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            Object current = beanPostProcessor.postProcessBeforeInitialization(bean, beanName);
+
+            if (current == null) {
+                return bean;
+            }
+
+            bean = current;
+        }
+        return bean;
+    }
+
+    public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)throws BeansException {
+        Object bean = existingBean;
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            Object current = beanPostProcessor.postProcessAfterInitialization(bean, beanName);
+
+            if (current == null) {
+                return bean;
+            }
+
+            bean = current;
+        }
+        return bean;
+    }
+
 
 }

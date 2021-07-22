@@ -3,9 +3,14 @@ package com.csu.springframework.test;
 import cn.hutool.core.io.IoUtil;
 import com.csu.springframework.beans.PropertyValue;
 import com.csu.springframework.beans.PropertyValues;
+import com.csu.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import com.csu.springframework.beans.factory.config.BeanPostProcessor;
 import com.csu.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import com.csu.springframework.context.support.ClassPathXmlApplicationContext;
 import com.csu.springframework.core.io.DefaultResourceLoader;
 import com.csu.springframework.core.io.Resource;
+import com.csu.springframework.test.beans.MyBeanFactoryPostProcessor;
+import com.csu.springframework.test.beans.MyBeanPostProcessor;
 import com.csu.springframework.test.beans.UserDao;
 import com.csu.springframework.test.beans.UserService;
 import com.csu.springframework.beans.factory.config.BeanDefinition;
@@ -96,6 +101,32 @@ public class ApiTest {
         UserDao userDao = factory.getBean("userDao", UserDao.class);
         Assert.assertNotNull(userDao);
         service.queryUserInfo("001");
+    }
+
+    @Test
+    public void testBeanFactoryPostProcessorAndBeanPostProcessor() {
+        DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
+
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
+        reader.loadBeanDefinition("classpath:spring.xml");
+
+        BeanFactoryPostProcessor myBeanFactoryPostProcessor = (BeanFactoryPostProcessor) factory.getBean("myBeanFactoryPostProcessor");
+        myBeanFactoryPostProcessor.postProcessBeanFactory(factory);
+
+        factory.addBeanPostProcessor((BeanPostProcessor) factory.getBean("myBeanPostProcessor"));
+
+        UserService userService = factory.getBean("userService", UserService.class);
+
+        System.out.println(userService);
+
+    }
+
+    @Test
+    public void testXML() {
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+
+        UserService userService = applicationContext.getBean("userService", UserService.class);
+        System.out.println("测试结果：" + userService);
     }
 
     public static void main(String[] args) throws NoSuchMethodException {

@@ -1,5 +1,7 @@
 package com.csu.springframework.test.beans;
 
+import java.lang.reflect.Method;
+
 public class UserService {
 
     private String uId;
@@ -64,5 +66,20 @@ public class UserService {
                 ", company='" + company + '\'' +
                 ", location='" + location + '\'' +
                 '}';
+    }
+
+    public static void testException() throws Exception {
+        try {
+            UserService.class.getMethod("queryUserInfo1");
+        } catch (NoSuchMethodException e) {
+            throw new NoSuchMethodException("no such method");
+        }
+        System.out.println("chenyu");
+    }
+
+    public static void main(String[] args) throws NoSuchMethodException {
+        Method queryUserInfo1 = UserService.class.getMethod("queryUserInfo1");
+        System.out.println(queryUserInfo1);
+
     }
 }

@@ -62,7 +62,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
     }
 
 
-    protected void doLoadBeanDefinitions(InputStream inputStream) throws ClassNotFoundException{
+    protected void doLoadBeanDefinitions(InputStream inputStream) throws ClassNotFoundException {
         Document document = XmlUtil.readXML(inputStream);
         Element root = document.getDocumentElement();
 
@@ -70,22 +70,21 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node item = childNodes.item(i);
-
             if (!beanIsElementSpecifiedByName(item, "bean")) {
                 continue;
             }
 
             Element element = (Element) item;
-            String beanName = generateBeanName(element);
-
-            String className = element.getAttribute("class");
-            Class<?> clazz = Class.forName(className);
-
-            if (getRegistry().containsBeanDefinition(beanName)) {
-                throw new BeansException("Duplicate beanName[" + beanName + "] is not allowed");
-            }
+            String beanName = generateBeanName(element, getRegistry());
+            Class<?> clazz = generateClass(element);
 
             BeanDefinition beanDefinition = new BeanDefinition(clazz);
+
+            //添加init-method
+            addInitMethodToBeanDefinition(beanDefinition, element);
+
+            //添加destroy-method
+            addDestroyMethodToBeanDefinition(beanDefinition, element);
 
             //添加property属性
             addPropertyToBeanDefinition(beanDefinition, element);
@@ -95,18 +94,37 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
         }
     }
 
-    private String generateBeanName(Element element) throws ClassNotFoundException {
+    private void addDestroyMethodToBeanDefinition(BeanDefinition beanDefinition, Element element) {
+        String destroyMethodName = element.getAttribute("destroy-method");
+        beanDefinition.setDestroyMethodName(destroyMethodName);
+    }
+
+    private void addInitMethodToBeanDefinition(BeanDefinition beanDefinition, Element element) {
+        String initMethodName = element.getAttribute("init-method");
+        beanDefinition.setInitMethodName(initMethodName);
+    }
+
+    private String generateBeanName(Element element, BeanDefinitionRegistry registry) throws ClassNotFoundException {
         String id = element.getAttribute("id");
         String name = element.getAttribute("name");
-        String className = element.getAttribute("class");
-
-        Class<?> clazz = Class.forName(className);
+        Class<?> clazz = generateClass(element);
         String beanName = StrUtil.isNotEmpty(id) ? id : name;
+
         if (StrUtil.isEmpty(beanName)) {
             beanName = StrUtil.lowerFirst(clazz.getSimpleName());
         }
 
+        if (registry.containsBeanDefinition(beanName)) {
+            throw new BeansException("Duplicate beanName[" + beanName + "] is not allowed");
+        }
+
         return beanName;
+    }
+
+    private Class<?> generateClass(Element element) throws ClassNotFoundException {
+        String className = element.getAttribute("class");
+        Class<?> clazz = Class.forName(className);
+        return clazz;
     }
 
     private void addPropertyToBeanDefinition(BeanDefinition beanDefinition, Element element) {

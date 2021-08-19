@@ -31,10 +31,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             //support bean property
             applyPropertyValues(beanName, bean, beanDefinition);
 
-             bean = initializeBean(beanName, bean, beanDefinition);
+            bean = initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
             throw new BeansException("Instantiation of bean failed", e);
         }
+
+        registerDisposableBeanIfNecessary(beanName, bean, beanDefinition);
 
         addSingleton(beanName, bean);
         return bean;
@@ -61,6 +63,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         //如果bean实现了InitializingBean接口，那么直接调用
         if (bean instanceof InitializingBean) {
             ((InitializingBean) bean).afterPropertiesSet();
+            //这里是不是该加一个return呀
         }
 
         String initMethodName = beanDefinition.getInitMethodName();

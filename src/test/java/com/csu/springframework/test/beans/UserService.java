@@ -1,8 +1,12 @@
 package com.csu.springframework.test.beans;
 
+import com.csu.springframework.beans.BeansException;
+import com.csu.springframework.beans.factory.*;
+import com.csu.springframework.context.ApplicationContext;
+
 import java.lang.reflect.Method;
 
-public class UserService {
+public class UserService implements BeanClassLoaderAware, ApplicationContextAware, BeanNameAware, BeanFactoryAware {
 
     private String uId;
     private String company;
@@ -81,5 +85,25 @@ public class UserService {
         Method queryUserInfo1 = UserService.class.getMethod("queryUserInfo1");
         System.out.println(queryUserInfo1);
 
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        System.out.println("setApplicationContext: " + applicationContext);
+    }
+
+    @Override
+    public void setBeanClassLoader(ClassLoader classLoader) {
+        System.out.println("setBeanClassLoader: " + classLoader);
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        System.out.println("setBeanFactory: " + beanFactory);
+    }
+
+    @Override
+    public void setBeanName(String name) {
+        System.out.println("setBeanName: " + name);
     }
 }

@@ -130,6 +130,11 @@ public class ApiTest {
         System.out.println("测试结果：" + userService);
     }
 
+    @Test
+    public void testFactoryBean() {
+
+    }
+
     public static void main(String[] args) throws NoSuchMethodException {
         Object o = new Object();
         ClassLoader classLoader = ApiTest.class.getClassLoader();

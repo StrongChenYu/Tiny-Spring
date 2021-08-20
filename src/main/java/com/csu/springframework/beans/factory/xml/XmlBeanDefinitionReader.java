@@ -80,6 +80,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
             BeanDefinition beanDefinition = new BeanDefinition(clazz);
 
+            //添加scope
+            addScopeToBeanDefinition(beanDefinition, element);
+
             //添加init-method
             addInitMethodToBeanDefinition(beanDefinition, element);
 
@@ -91,6 +94,13 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
             //注册beanDefinition
             getRegistry().registerBeanDefinition(beanName, beanDefinition);
+        }
+    }
+
+    private void addScopeToBeanDefinition(BeanDefinition beanDefinition, Element element) {
+        String scope = element.getAttribute("scope");
+        if (StrUtil.isNotEmpty(scope)) {
+            beanDefinition.setScope(scope);
         }
     }
 

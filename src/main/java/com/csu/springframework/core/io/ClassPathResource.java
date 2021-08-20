@@ -20,7 +20,6 @@ public class ClassPathResource implements Resource {
         this.classLoader = classLoader == null ? ClassUtils.getDefaultClassLoader() : classLoader;
     }
 
-
     @Override
     public InputStream getInputStream() throws IOException {
         InputStream inputStream = classLoader.getResourceAsStream(path);

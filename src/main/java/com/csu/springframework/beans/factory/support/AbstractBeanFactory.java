@@ -1,16 +1,15 @@
 package com.csu.springframework.beans.factory.support;
 
 import com.csu.springframework.beans.BeansException;
-import com.csu.springframework.beans.factory.BeanFactory;
+import com.csu.springframework.beans.factory.FactoryBean;
 import com.csu.springframework.beans.factory.config.BeanDefinition;
 import com.csu.springframework.beans.factory.config.BeanPostProcessor;
 import com.csu.springframework.beans.factory.config.ConfigurableBeanFactory;
-import com.csu.springframework.beans.factory.config.DefaultSingletonBeanRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
+public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
 
     private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
@@ -30,13 +29,28 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     }
 
     private <T> T doGetBean(String beanName, Object[] args) {
-        Object bean = getSingleton(beanName);
-        if (bean != null) {
-            return (T) bean;
+        Object sharedInstance = getSingleton(beanName);
+        if (sharedInstance != null) {
+            return (T) getObjectForBeanInstance(sharedInstance, beanName);
         }
 
         BeanDefinition beanDefinition = getBeanDefinition(beanName);
-        return (T) createBean(beanName, beanDefinition, args);
+        Object bean = createBean(beanName, beanDefinition, args);
+        return (T) getObjectForBeanInstance(bean, beanName);
+    }
+
+    private Object getObjectForBeanInstance(Object beanInstance, String beanName) {
+        if (!(beanInstance instanceof FactoryBean)) {
+            return beanInstance;
+        }
+
+        Object object = getCachedObjectForFactoryBean(beanName);
+        if (object == null) {
+            FactoryBean<?> factoryBean = (FactoryBean<?>) beanInstance;
+            object = getObjectFromFactoryBean(factoryBean, beanName);
+        }
+
+        return object;
     }
 
     @Override

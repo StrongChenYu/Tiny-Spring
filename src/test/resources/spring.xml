@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
-
-    <bean id="userDao" class="com.csu.springframework.test.beans.UserDao" init-method="initDataMethod" destroy-method="destroyMethod"/>
-
-    <bean id="userService" class="com.csu.springframework.test.beans.UserService">
+    <bean id="userService" class="com.csu.springframework.test.factorybean.UserService">
         <property name="uId" value="01"/>
         <property name="company" value="腾讯"/>
         <property name="location" value="深圳"/>
-        <property name="userDao" ref="userDao"/>
+        <property name="userDao" ref="proxyUserDao"/>
     </bean>
 
-    <bean class="com.csu.springframework.test.beans.MyBeanFactoryPostProcessor" />
-    <bean class="com.csu.springframework.test.beans.MyBeanPostProcessor" />
-
+    <bean id="proxyUserDao" class="com.csu.springframework.test.factorybean.ProxyBeanFactory"/>
 </beans>

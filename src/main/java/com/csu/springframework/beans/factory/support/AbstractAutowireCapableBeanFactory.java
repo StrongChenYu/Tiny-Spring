@@ -5,9 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.csu.springframework.beans.BeansException;
 import com.csu.springframework.beans.PropertyValue;
 import com.csu.springframework.beans.PropertyValues;
-import com.csu.springframework.beans.factory.AutowireCapableBeanFactory;
-import com.csu.springframework.beans.factory.DisposableBean;
-import com.csu.springframework.beans.factory.InitializingBean;
+import com.csu.springframework.beans.factory.*;
 import com.csu.springframework.beans.factory.config.BeanDefinition;
 import com.csu.springframework.beans.factory.config.BeanPostProcessor;
 import com.csu.springframework.beans.factory.config.BeanReference;
@@ -31,7 +29,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             //support bean property
             applyPropertyValues(beanName, bean, beanDefinition);
 
-             bean = initializeBean(beanName, bean, beanDefinition);
+            bean = initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
             throw new BeansException("Instantiation of bean failed", e);
         }
@@ -43,6 +41,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     }
 
     private Object initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) {
+        //注入aware对象
+        injectAwareBean(beanName, bean, beanDefinition);
+
         //前置处理
         Object wrappedBean = applyBeanPostProcessorsBeforeInitialization(bean, beanName);
 
@@ -59,10 +60,26 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return wrappedBean;
     }
 
+    private void injectAwareBean(String beanName, Object bean, BeanDefinition beanDefinition) {
+        if (!(bean instanceof Aware)) {
+            return;
+        }
+        if (bean instanceof BeanFactoryAware) {
+            ((BeanFactoryAware) bean).setBeanFactory(this);
+        }
+        if (bean instanceof BeanNameAware) {
+            ((BeanNameAware) bean).setBeanName(beanName);
+        }
+        if (bean instanceof BeanClassLoaderAware) {
+            ((BeanClassLoaderAware) bean).setBeanClassLoader(getBeanClassLoader());
+        }
+    }
+
     protected void invokeInitMethods(String beanName, Object bean, BeanDefinition beanDefinition) throws Exception {
         //如果bean实现了InitializingBean接口，那么直接调用
         if (bean instanceof InitializingBean) {
             ((InitializingBean) bean).afterPropertiesSet();
+            //这里是不是该加一个return呀
         }
 
         String initMethodName = beanDefinition.getInitMethodName();

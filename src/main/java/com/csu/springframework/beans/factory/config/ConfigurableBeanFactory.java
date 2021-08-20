@@ -10,5 +10,4 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 
     void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
 
-
 }

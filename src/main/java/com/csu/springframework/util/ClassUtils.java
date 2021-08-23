@@ -26,6 +26,14 @@ public class ClassUtils {
         return c1;
     }
 
+    public static boolean isCglibProxyClass(Class<?> clazz) {
+        return (clazz != null && isCglibProxyClassName(clazz.getName()));
+    }
+
+    private static boolean isCglibProxyClassName(String className) {
+        return (className != null && className.contains("$$"));
+    }
+
     public static void main(String[] args) {
         ClassLoader classLoader = ClassUtils.class.getClassLoader();
         InputStream resourceAsStream = classLoader.getResourceAsStream("1234.txt");

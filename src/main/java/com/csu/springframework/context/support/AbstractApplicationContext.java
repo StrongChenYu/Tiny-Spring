@@ -4,8 +4,6 @@ import com.csu.springframework.beans.BeansException;
 import com.csu.springframework.beans.factory.ConfigurableListableBeanFactory;
 import com.csu.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import com.csu.springframework.beans.factory.config.BeanPostProcessor;
-import com.csu.springframework.beans.factory.config.ConfigurableBeanFactory;
-import com.csu.springframework.context.ApplicationContext;
 import com.csu.springframework.context.ApplicationEvent;
 import com.csu.springframework.context.ApplicationListener;
 import com.csu.springframework.context.ConfigurableApplicationContext;
@@ -25,23 +23,31 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     @Override
     public void refresh() throws BeansException {
+        // 1. 加载BeanDefinition
         refreshBeanFactory();
 
+        // 2. 获取beanFactory
         ConfigurableListableBeanFactory factory = getBeanFactory();
 
+        // 3. 添加ApplicationContextAwareProcessor
         factory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
 
+        // 4. 调用factoryPostProcessor
         invokeBeanFactoryPostProcessor(factory);
 
+        // 5. 注册beanPostProcessor
         registerBeanPostProcessor(factory);
 
+        // 6. 初始化事件
         initApplicationEventMulticaster();
 
+        // 7. 注册listener
         registerListener();
 
-        // 这里会把所有的bean全部调用一次getBean方法
+        // 8. 这里会把所有的bean全部调用一次getBean方法
         factory.preInstantiateSingletons();
 
+        // 9. finish
         finishRefresh();
     }
 

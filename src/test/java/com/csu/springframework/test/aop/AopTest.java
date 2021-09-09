@@ -5,6 +5,7 @@ import com.csu.springframework.aop.TargetSource;
 import com.csu.springframework.aop.aspectj.AspectJExpressionPointcut;
 import com.csu.springframework.aop.framework.Cglib2AopProxy;
 import com.csu.springframework.aop.framework.JDKDynamicAopProxy;
+import com.csu.springframework.context.support.ClassPathXmlApplicationContext;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -27,7 +28,7 @@ public class AopTest {
         IUserService userService = new UserService();
         TargetSource source = new TargetSource(userService);
 
-        AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut("execution(* com.csu.springframework.test.aop.IUserService.*(..))");
+        AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut("execution(* com.csu.springframework.test.aop.IUserService.queryUserInfo(..))");
 
         AdvisedSupport advisedSupport = new AdvisedSupport();
         advisedSupport.setTargetSource(source);
@@ -43,5 +44,12 @@ public class AopTest {
         proxyCGLIB.queryUserInfo();
         proxyCGLIB.register("chenyu");
 
+    }
+
+    @Test
+    public void testAopProcessor() {
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        UserService userService = applicationContext.getBean("userService", UserService.class);
+        System.out.println("测试结果：" + userService.queryUserInfo());
     }
 }

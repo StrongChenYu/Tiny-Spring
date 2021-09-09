@@ -14,7 +14,7 @@ public class RequestCtrlInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if (method.getName().equals("request")) {
-            System.out.println(method);
+            System.out.println("invoke method");
             return method.invoke(target, args);
         }
         return null;

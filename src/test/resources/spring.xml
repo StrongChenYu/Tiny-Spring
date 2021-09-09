@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
 
-    <bean class="com.csu.springframework.test.event.CustomEventListener"></bean>
+    <bean id="userService" class="com.csu.springframework.test.aop.UserService"/>
+
+    <bean class="com.csu.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+
+    <bean id="beforeAdvice" class="com.csu.springframework.test.aop.UserServiceBeforeAdvice"/>
+
+    <bean id="methodInterceptor" class="com.csu.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor">
+        <property name="advice" ref="beforeAdvice"/>
+    </bean>
+
+    <bean id="pointcutAdvisor" class="com.csu.springframework.aop.aspectj.AspectJExpressionPointCutAdvisor">
+        <property name="expression" value="execution(* com.csu.springframework.test.aop.UserService.*(..))"/>
+        <property name="advice" ref="methodInterceptor"/>
+    </bean>
+
 </beans>

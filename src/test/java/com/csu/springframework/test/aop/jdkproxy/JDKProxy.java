@@ -10,6 +10,6 @@ public class JDKProxy {
                 new Class[]{RequestAble.class},
                 new RequestCtrlInvocationHandler(new RequestImpl())
         );
-        requestAble.request();
+        requestAble.request().request();
     }
 }

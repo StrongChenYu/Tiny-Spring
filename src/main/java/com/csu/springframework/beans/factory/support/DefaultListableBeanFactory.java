@@ -24,7 +24,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
         BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
 
         if (beanDefinition == null) {
-            throw new BeansException("No bean named " + beanName + "is defined");
+            throw new BeansException("No bean named " + beanName + " is defined");
         }
 
         return beanDefinition;
@@ -64,7 +64,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
     @Override
     public void preInstantiateSingletons() throws BeansException {
-        beanDefinitionMap.keySet().forEach(this::getBean);
+        for (String s : beanDefinitionMap.keySet()) {
+            this.getBean(s);
+        }
     }
 
 

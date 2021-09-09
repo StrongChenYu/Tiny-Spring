@@ -7,6 +7,15 @@ public class AdvisedSupport {
     private TargetSource targetSource;
     private MethodMatcher methodMatcher;
     private MethodInterceptor methodInterceptor;
+    private boolean proxyTargetClass = false;
+
+    public void setProxyTargetClass(boolean proxyTargetClass) {
+        this.proxyTargetClass = proxyTargetClass;
+    }
+
+    public boolean isProxyTargetClass() {
+        return proxyTargetClass;
+    }
 
     public TargetSource getTargetSource() {
         return targetSource;

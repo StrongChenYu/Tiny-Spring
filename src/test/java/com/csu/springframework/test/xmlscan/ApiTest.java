@@ -15,7 +15,7 @@ public class ApiTest {
 
     @Test
     public void testAutoScanXml() {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:scan/spring-scan.xml");
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:scan/spring.xml");
         UserService userService = applicationContext.getBean("myUserService", UserService.class);
         System.out.println(userService.queryUserInfo());
     }

@@ -6,6 +6,7 @@ import com.csu.springframework.beans.factory.config.BeanDefinition;
 import com.csu.springframework.beans.factory.config.BeanPostProcessor;
 import com.csu.springframework.beans.factory.config.ConfigurableBeanFactory;
 import com.csu.springframework.util.ClassUtils;
+import com.csu.springframework.util.StringValueResolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
     private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
+    private final List<StringValueResolver> embeddedValueResolves = new ArrayList<>();
 
     @Override
     public Object getBean(String beanName, Object... args) {
@@ -29,6 +31,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
     public <T> T getBean(String beanName, Class<T> clazz) {
         return (T) getBean(beanName);
     }
+
 
     private <T> T doGetBean(String beanName, Object[] args) {
         Object sharedInstance = getSingleton(beanName);
@@ -67,6 +70,20 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     public ClassLoader getBeanClassLoader() {
         return beanClassLoader;
+    }
+
+    @Override
+    public void addEmbeddedValueResolver(StringValueResolver resolver) {
+        this.embeddedValueResolves.add(resolver);
+    }
+
+    @Override
+    public String resolveEmbeddedValue(String value) {
+        String result = value;
+        for (StringValueResolver embeddedValueResolve : embeddedValueResolves) {
+            result = embeddedValueResolve.resolveStringValue(result);
+        }
+        return result;
     }
 
     protected abstract Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException;

@@ -5,10 +5,7 @@ import com.csu.springframework.beans.factory.ConfigurableListableBeanFactory;
 import com.csu.springframework.beans.factory.config.BeanDefinition;
 import com.csu.springframework.beans.factory.config.BeanPostProcessor;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
 
@@ -70,4 +67,21 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     }
 
 
+    @Override
+    public <T> T getBean(Class<T> requiredType) throws BeansException {
+        List<String> beanNames = new ArrayList<>();
+        for (Map.Entry<String, BeanDefinition> entry : beanDefinitionMap.entrySet()) {
+            Class<?> beanClass = entry.getValue().getBeanClass();
+            if (requiredType.isAssignableFrom(beanClass)) {
+                beanNames.add(entry.getKey());
+            }
+        }
+
+        if (beanNames.size() == 1) {
+            return getBean(beanNames.get(0), requiredType);
+        }
+
+        throw new BeansException(requiredType + "expected single bean but found " + beanNames.size() + ": " + beanNames);
+
+    }
 }

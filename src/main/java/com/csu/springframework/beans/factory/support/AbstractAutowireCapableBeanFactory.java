@@ -33,6 +33,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             //create bean
             bean = createBeanInstance(beanDefinition, beanName, args);
 
+            // 在apply之前把自动注入的属性都加入到properties中
+            applyBeanPostProcessorsBeforeApplyPropertyValues(beanName, bean, beanDefinition);
+
             //support bean property
             applyPropertyValues(beanName, bean, beanDefinition);
 
@@ -45,6 +48,20 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             addSingleton(beanName, bean);
         }
         return bean;
+    }
+
+    protected void applyBeanPostProcessorsBeforeApplyPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                PropertyValues pvs = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessPropertyValues(beanDefinition.getPropertyValues(), bean, beanName);
+
+                if (pvs != null) {
+                    for (PropertyValue propertyValue : pvs.getPropertyValues()) {
+                        beanDefinition.getPropertyValues().addPropertyValue(propertyValue);
+                    }
+                }
+            }
+        }
     }
 
     private Object resolveBeforeInstantiation(String beanName, BeanDefinition beanDefinition) {

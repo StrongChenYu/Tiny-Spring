@@ -7,7 +7,7 @@ public class EventTest {
 
     @Test
     public void Test() {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring-property.xml");
         applicationContext.publishEvent(new CustomEvent(applicationContext, 1231312L, "Success"));
         applicationContext.registerShutdownHook();
     }

@@ -95,7 +95,7 @@ public class ApiTest {
         DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
 
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
-        reader.loadBeanDefinition("classpath:spring.xml");
+        reader.loadBeanDefinition("classpath:spring-property.xml");
 
         UserService service = factory.getBean("userService", UserService.class);
         UserDao userDao = factory.getBean("userDao", UserDao.class);
@@ -108,7 +108,7 @@ public class ApiTest {
         DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
 
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
-        reader.loadBeanDefinition("classpath:spring.xml");
+        reader.loadBeanDefinition("classpath:spring-property.xml");
 
         BeanFactoryPostProcessor myBeanFactoryPostProcessor = (BeanFactoryPostProcessor) factory.getBean("myBeanFactoryPostProcessor");
         myBeanFactoryPostProcessor.postProcessBeanFactory(factory);
@@ -123,7 +123,7 @@ public class ApiTest {
 
     @Test
     public void testXML() {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring-property.xml");
         applicationContext.registerShutdownHook();
 
         UserService userService = applicationContext.getBean("userService", UserService.class);

@@ -2,26 +2,29 @@ package com.csu.springframework.beans;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 
 public class PropertyValues {
 
-    private List<PropertyValue> propertyValueList = new ArrayList<>();
+    private Map<String, PropertyValue> propertyValueMap = new ConcurrentHashMap<>();
 
     public void addPropertyValue(PropertyValue pv) {
-        propertyValueList.add(pv);
+        propertyValueMap.put(pv.getName(), pv);
     }
 
+
     public PropertyValue getPropertyValue(String propertyValue) {
-        for (PropertyValue value : propertyValueList) {
-            if (value.getValue().equals(propertyValue)) {
-                return value;
-            }
-        }
         return null;
     }
 
-    public List<PropertyValue> getPropertyValueList() {
-        return propertyValueList;
+    public PropertyValue[] getPropertyValues() {
+        return propertyValueMap.values().toArray(new PropertyValue[0]);
+    }
+
+    public Object getPropertyObject(String name) {
+        return propertyValueMap.get(name);
     }
 
 }

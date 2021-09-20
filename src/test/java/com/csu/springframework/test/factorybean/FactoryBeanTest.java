@@ -11,7 +11,7 @@ public class FactoryBeanTest {
 
     @Test
     public void test() {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring-property.xml");
         applicationContext.registerShutdownHook();
 
         // 2. 调用代理方法

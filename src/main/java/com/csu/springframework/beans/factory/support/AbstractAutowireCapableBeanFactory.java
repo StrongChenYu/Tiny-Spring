@@ -127,7 +127,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
     private void applyPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
         PropertyValues propertyValues = beanDefinition.getPropertyValues();
-        for (PropertyValue propertyValue : propertyValues.getPropertyValueList()) {
+        for (PropertyValue propertyValue : propertyValues.getPropertyValues()) {
 
             String name = propertyValue.getName();
             Object value = propertyValue.getValue();

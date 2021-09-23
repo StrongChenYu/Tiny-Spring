@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
 
-    <bean id="userService" class="com.csu.springframework.test.aop.UserService"/>
+    <bean id="userService" class="com.csu.springframework.test.aop.UserService">
+        <property name="token" value="RejDlI78hu223Opo983Ds"/>
+    </bean>
+
 
     <bean class="com.csu.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
 

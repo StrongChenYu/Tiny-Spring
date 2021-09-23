@@ -47,6 +47,13 @@ public class AopTest {
     }
 
     @Test
+    public void testPropertyAutowired() {
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:aop/spring.xml");
+        IUserService userService = applicationContext.getBean("userService", IUserService.class);
+        userService.testToken();
+    }
+
+    @Test
     public void testAopProcessor() {
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring-property.xml");
         UserService userService = applicationContext.getBean("userService", UserService.class);

@@ -31,18 +31,8 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        return bean;
-    }
+        Class<?> clazz = bean.getClass();
 
-    /**
-     * instantiation 创建这个对象之前
-     * initialization
-     * @param clazz
-     * @param beanName
-     * @return
-     */
-    @Override
-    public Object postProcessBeforeInstantiation(Class<?> clazz, String beanName) throws BeansException {
         if (isInfrastructureClass(clazz)) {
             return null;
         }
@@ -58,7 +48,7 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
             AdvisedSupport support = new AdvisedSupport();
             TargetSource source = null;
             try {
-                source = new TargetSource(clazz.getDeclaredConstructor().newInstance());
+                source = new TargetSource(bean);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -73,12 +63,24 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
             return new ProxyFactory(support).getProxy();
         }
 
+        return bean;
+    }
+
+    /**
+     * instantiation 创建这个对象之前
+     * initialization
+     * @param clazz
+     * @param beanName
+     * @return
+     */
+    @Override
+    public Object postProcessBeforeInstantiation(Class<?> clazz, String beanName) throws BeansException {
         return null;
     }
 
     @Override
     public PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) throws BeansException {
-        return null;
+        return pvs;
     }
 
     private boolean isInfrastructureClass(Class<?> clazz) {

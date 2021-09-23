@@ -4,6 +4,8 @@ import java.util.Random;
 
 public class UserService implements IUserService {
 
+    private String token;
+
     public String queryUserInfo() {
         try {
             Thread.sleep(new Random(1).nextInt(100));
@@ -20,5 +22,9 @@ public class UserService implements IUserService {
             e.printStackTrace();
         }
         return "注册用户：" + userName + " success！";
+    }
+
+    public void testToken() {
+        System.out.println(token);
     }
 }

@@ -14,10 +14,14 @@ import org.aopalliance.intercept.MethodInterceptor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPostProcessor, BeanFactoryAware {
 
     private DefaultListableBeanFactory beanFactory;
+    private final Set<Object> earlyProxyReferences = Collections.synchronizedSet(new HashSet<Object>());
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -31,10 +35,45 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        if (!earlyProxyReferences.contains(beanName)) {
+            return wrapIfNecessary(bean, beanName);
+        }
+        return bean;
+    }
+
+    /**
+     * instantiation 创建这个对象之前
+     * initialization
+     * @param clazz
+     * @param beanName
+     * @return
+     */
+    @Override
+    public Object postProcessBeforeInstantiation(Class<?> clazz, String beanName) throws BeansException {
+        return null;
+    }
+
+    @Override
+    public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
+        return true;
+    }
+
+    @Override
+    public PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) throws BeansException {
+        return pvs;
+    }
+
+    @Override
+    public Object getEarlyBeanReference(Object bean, String beanName) {
+        earlyProxyReferences.add(beanName);
+        return wrapIfNecessary(bean, beanName);
+    }
+
+    protected Object wrapIfNecessary(Object bean, String beanName) {
         Class<?> clazz = bean.getClass();
 
         if (isInfrastructureClass(clazz)) {
-            return null;
+            return bean;
         }
 
         Collection<AspectJExpressionPointCutAdvisor> advisors = beanFactory.getBeansOfType(AspectJExpressionPointCutAdvisor.class).values();
@@ -64,23 +103,6 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
         }
 
         return bean;
-    }
-
-    /**
-     * instantiation 创建这个对象之前
-     * initialization
-     * @param clazz
-     * @param beanName
-     * @return
-     */
-    @Override
-    public Object postProcessBeforeInstantiation(Class<?> clazz, String beanName) throws BeansException {
-        return null;
-    }
-
-    @Override
-    public PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) throws BeansException {
-        return pvs;
     }
 
     private boolean isInfrastructureClass(Class<?> clazz) {

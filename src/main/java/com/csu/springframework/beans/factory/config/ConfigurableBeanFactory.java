@@ -1,6 +1,7 @@
 package com.csu.springframework.beans.factory.config;
 
 import com.csu.springframework.beans.factory.HierarchicalBeanFactory;
+import com.csu.springframework.core.io.convert.ConversionService;
 import com.csu.springframework.util.StringValueResolver;
 
 public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, SingletonBeanRegistry {
@@ -14,4 +15,8 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
     void addEmbeddedValueResolver(StringValueResolver resolver);
 
     String resolveEmbeddedValue(String value);
+
+    ConversionService getConversionService();
+
+    void setConversionService(ConversionService conversionService);
 }

@@ -4,6 +4,7 @@ import com.csu.springframework.beans.BeansException;
 import com.csu.springframework.beans.factory.ConfigurableListableBeanFactory;
 import com.csu.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import com.csu.springframework.beans.factory.config.BeanPostProcessor;
+import com.csu.springframework.beans.factory.config.ConfigurableBeanFactory;
 import com.csu.springframework.context.ApplicationEvent;
 import com.csu.springframework.context.ApplicationListener;
 import com.csu.springframework.context.ConfigurableApplicationContext;
@@ -12,6 +13,7 @@ import com.csu.springframework.context.event.ContextClosedEvent;
 import com.csu.springframework.context.event.ContextRefreshedEvent;
 import com.csu.springframework.context.event.SimpleApplicationEventMulticaster;
 import com.csu.springframework.core.io.DefaultResourceLoader;
+import com.csu.springframework.core.io.convert.ConversionService;
 
 import java.util.Collection;
 import java.util.Map;
@@ -45,10 +47,21 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         registerListener();
 
         // 8. 这里会把所有的bean全部调用一次getBean方法
-        factory.preInstantiateSingletons();
+        finishBeanFactoryInitialization(factory);
 
         // 9. finish
         finishRefresh();
+    }
+
+    protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
+        if (beanFactory.containsBean("conversionService")) {
+            Object conversionService = beanFactory.getBean("conversionService");
+            if (conversionService instanceof ConversionService) {
+                beanFactory.setConversionService((ConversionService) conversionService);
+            }
+        }
+
+        beanFactory.preInstantiateSingletons();
     }
 
     protected void invokeBeanFactoryPostProcessor(ConfigurableListableBeanFactory factory) {
@@ -117,6 +130,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     @Override
     public <T> T getBean(Class<T> clazz) throws BeansException { return getBeanFactory().getBean(clazz); }
+
+    @Override
+    public boolean containsBean(String name) {
+        return getBeanFactory().containsBean(name);
+    }
 
     @Override
     public void registerShutdownHook() {

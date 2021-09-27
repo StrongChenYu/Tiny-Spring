@@ -2,6 +2,7 @@ package com.csu.springframework.beans.factory.support;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.TypeUtil;
 import com.csu.springframework.beans.BeansException;
 import com.csu.springframework.beans.PropertyValue;
 import com.csu.springframework.beans.PropertyValues;
@@ -10,6 +11,7 @@ import com.csu.springframework.beans.factory.config.BeanDefinition;
 import com.csu.springframework.beans.factory.config.BeanPostProcessor;
 import com.csu.springframework.beans.factory.config.BeanReference;
 import com.csu.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
+import com.csu.springframework.core.io.convert.ConversionService;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -183,8 +185,15 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
             if (value instanceof BeanReference) {
                 String beanReferenceBeanName = ((BeanReference) value).getBeanName();
-
                 value = getBean((beanReferenceBeanName));
+            } else {
+                Class<?> sourceType = value.getClass();
+                Class<?> targetType = (Class<?>) TypeUtil.getFieldType(bean.getClass(), name);
+
+                ConversionService conversionService = getConversionService();
+                if (conversionService != null && conversionService.canConvert(sourceType, targetType)) {
+                    value = conversionService.convert(value, targetType);
+                }
             }
 
             BeanUtil.setFieldValue(bean, name, value);
@@ -289,5 +298,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             registerDisposableBean(beanName, new DisposableBeanAdapter(bean, beanName, beanDefinition));
         }
     }
+
 
 }

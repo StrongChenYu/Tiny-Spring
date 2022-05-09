@@ -42,12 +42,20 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
         return singletonObject;
     }
 
+    @Override
     public void registerSingleton(String beanName, Object object) {
         singleObjects.put(beanName, object);
         earlySingletonObjects.remove(beanName);
         singletonFactories.remove(beanName);
     }
 
+    /**
+     * singletonFactories是三级缓存
+     * 也就是说
+     * 把singletonFactory对象放入到三级缓存中，并且从二级缓存中移除
+     * @param beanName
+     * @param singletonFactory
+     */
     protected void addSingletonFactory(String beanName, ObjectFactory<?> singletonFactory) {
         if (!this.singletonFactories.containsKey(beanName)) {
             this.singletonFactories.put(beanName, singletonFactory);
@@ -55,10 +63,12 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
         }
     }
 
+    @Override
     public void registerDisposableBean(String beanName, DisposableBean bean) {
         disposableBeans.put(beanName, bean);
     }
 
+    @Override
     public void destroySingletons() {
         Set<String> keySet = this.disposableBeans.keySet();
         Object[] disposableBeanNames = keySet.toArray();

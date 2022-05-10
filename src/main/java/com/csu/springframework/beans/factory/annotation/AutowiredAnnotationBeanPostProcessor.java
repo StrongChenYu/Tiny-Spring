@@ -37,6 +37,16 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor, 
         return true;
     }
 
+    /**
+     * 这个函数明显就是在给bean的每一个field赋值
+     * 怎么get其他的bean的呢？
+     * 通过beanFactoryAware接口去get一个factory，这样就可以为所欲为啦！
+     * @param pvs
+     * @param bean
+     * @param beanName
+     * @return
+     * @throws BeansException
+     */
     @Override
     public PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) throws BeansException {
         Class<?> clazz = bean.getClass();

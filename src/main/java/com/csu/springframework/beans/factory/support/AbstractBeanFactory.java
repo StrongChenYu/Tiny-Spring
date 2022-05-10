@@ -46,8 +46,15 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         return (T) getObjectForBeanInstance(bean, beanName);
     }
 
+    /**
+     * 这个方法的目的是为了处理FactoryBean的情况
+     * @param beanInstance
+     * @param beanName
+     * @return
+     */
     private Object getObjectForBeanInstance(Object beanInstance, String beanName) {
         if (!(beanInstance instanceof FactoryBean)) {
+            // 如果不属于FactoryBean的话，就直接把这个bean返回了
             return beanInstance;
         }
 

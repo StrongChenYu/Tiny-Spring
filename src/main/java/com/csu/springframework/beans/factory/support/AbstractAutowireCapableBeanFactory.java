@@ -29,17 +29,34 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             //create bean
             bean = createBeanInstance(beanDefinition, beanName, args);
 
+            /**
+             * 这个地方有问题感觉
+             * 因为进入if后的逻辑明显是
+             * 判断有无AOP的类
+             * 如果存在这个postProcessor的话
+             * 就会把这个代理对象放入到三级缓存中
+             * 那为什么在开始的时候要判断isSingleton()呢?
+             */
             if (beanDefinition.isSingleton()) {
                 Object finalBean = bean;
+                // getEarlyBeanReference函数会生成一个代理类
                 addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, beanDefinition, finalBean));
             }
 
+            /**
+             * 这个地方在控制在初始化之后，是否要进行属性的注入
+             * 如果不能的话就直接返回这个bean了
+             * 这里返回的bean全部都是初始化的bean
+             * 没有填充任何的属性
+             */
             boolean continueWithPropertyPopulation = applyBeanPostProcessorsAfterInstantiation(beanName, bean);
             if (!continueWithPropertyPopulation) {
                 return bean;
             }
 
-            // 在apply之前把自动注入的属性都加入到properties中
+            /**
+             * 那么这个函数就是填充属性了
+             */
             applyBeanPostProcessorsBeforeApplyPropertyValues(beanName, bean, beanDefinition);
 
             //support bean property
@@ -58,6 +75,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return exposedObject;
     }
 
+    /**
+     * 这个函数的作用其实是在控制bean的生命周期
+     * @param beanName
+     * @param bean
+     * @return 是否可以继续运行
+     */
     protected boolean applyBeanPostProcessorsAfterInstantiation(String beanName, Object bean) {
         boolean continueWithPropertyPopulation = true;
         for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
@@ -71,6 +94,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return continueWithPropertyPopulation;
     }
 
+    /**
+     * 这个函数跟AOP有关
+     * @param beanName bean的名字
+     * @param definition bean的meta data
+     * @param bean bean
+     * @return 被代理的类
+     */
     protected Object getEarlyBeanReference(String beanName, BeanDefinition definition, Object bean) {
         Object exposedObject = bean;
         for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {

@@ -25,25 +25,50 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     @Override
     public void refresh() throws BeansException {
-        // 1. 加载BeanDefinition
+        /**
+         * 1. 加载BeanDefinition
+         * 加载beanDefinition，把xml文件中的内容读取出来，然后加载到beanDefinition中
+         */
         refreshBeanFactory();
 
-        // 2. 获取beanFactory
+        /**
+         * 2. 上一步中会初始化一个DefaultListableBeanFactory
+         * 这一步主要是get到这个factory
+         */
         ConfigurableListableBeanFactory factory = getBeanFactory();
 
-        // 3. 添加ApplicationContextAwareProcessor
+        /**
+         * 3. 因为有的bean实现了contextAware接口
+         * 所有在这个地方就自己定义了一个postProcessor
+         * 这个processor中含有context对象
+         * 到时候调用postprocessor处理的时候
+         * 就可以把这个类注入进去
+         */
         factory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
 
-        // 4. 调用factoryPostProcessor
+        /**
+         * 4. 调用factoryPostProcessor
+         * 注意：这个地方会调用getBean()方法！会初始化BeanFactoryPostProcessor
+         */
         invokeBeanFactoryPostProcessor(factory);
 
-        // 5. 注册beanPostProcessor
+        /**
+         * 5. 注册beanPostProcessor
+         * 注意：这个地方也会getBean()方法，那么会初始化所有BeanPostProcessor
+         */
         registerBeanPostProcessor(factory);
 
-        // 6. 初始化事件
+        /**
+         * 6. 关于事件的bean
+         * 主要是先生成广播器
+         */
         initApplicationEventMulticaster();
 
-        // 7. 注册listener
+        /**
+         * 7. 注册listener
+         * 后把容器中的listener类型的bean get出来
+         * 然后注册到广播器中
+         */
         registerListener();
 
         // 8. 这里会把所有的bean全部调用一次getBean方法
@@ -61,6 +86,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
             }
         }
 
+        /**
+         * 这里说明会把所有的singleton类型的bean全部初始化
+         * 在Spring里面也会做同样的事情
+         */
         beanFactory.preInstantiateSingletons();
     }
 

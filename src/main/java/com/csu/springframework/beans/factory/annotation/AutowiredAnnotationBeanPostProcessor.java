@@ -58,6 +58,12 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor, 
             if (valueAnnotation != null) {
                 String value = valueAnnotation.value();
                 value = beanFactory.resolveEmbeddedValue(value);
+
+                /**
+                 *  我觉得这个地方不应该进行此项职责
+                 *  应该把注解解析到的值填充到beanDefinition中
+                 *  然后在下一个生命周期函数applyBeanProperties中进行
+                 */
                 BeanUtil.setFieldValue(bean, field.getName(), value);
             }
 
@@ -73,6 +79,9 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor, 
                 } else {
                     dependentBean = beanFactory.getBean(type);
                 }
+                /**
+                 * 同上
+                 */
                 BeanUtil.setFieldValue(bean, field.getName(), dependentBean);
             }
         }

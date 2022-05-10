@@ -58,6 +58,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
             return beanInstance;
         }
 
+        /**
+         * 下面是FactoryBean的情况
+         * 其实就是单独设计一个存放FactoryBean的地方，然后再从这个cache里面去取
+         * 每次get的时候就会从这个缓存中取获取FactoryBean的getObject()方法中定义的对象，然后把它返回
+         */
         Object object = getCachedObjectForFactoryBean(beanName);
         if (object == null) {
             FactoryBean<?> factoryBean = (FactoryBean<?>) beanInstance;

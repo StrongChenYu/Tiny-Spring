@@ -40,6 +40,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             if (beanDefinition.isSingleton()) {
                 Object finalBean = bean;
                 // getEarlyBeanReference函数会生成一个代理类
+                // 这个地方会把对象放到三级缓存里面
                 addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, beanDefinition, finalBean));
             }
 
@@ -55,13 +56,25 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             }
 
             /**
-             * 那么这个函数就是填充属性了
+             * 那么这个函数就是填充属性之前的动作了
+             * 典型的作用：
+             * 1. 处理@Value, @Autowired, @Qualifier 注解
              */
             applyBeanPostProcessorsBeforeApplyPropertyValues(beanName, bean, beanDefinition);
 
-            //support bean property
+            /**
+             * 这里的含义根据函数名称可以看出是在给bean填充属性
+             */
             applyPropertyValues(beanName, bean, beanDefinition);
 
+            /**
+             * 到这里的时候bean已经实例化成功了
+             * 并且bean中所有的属性都会填充上了
+             * 那么下一步就是初始化之后做的事情了
+             * 1. beanProcessorBeforeInitialization
+             * 2. init-method
+             * 3. beanProcessorAfterInitialization
+             */
             bean = initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
             throw new BeansException("Instantiation of bean failed", e);
@@ -128,10 +141,17 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
     }
 
+    /**
+     * todo: 需要调用beforeInstantiation类型的beanPostProcessor
+     * @param beanName
+     * @param beanDefinition
+     * @return
+     */
     private Object resolveBeforeInstantiation(String beanName, BeanDefinition beanDefinition) {
         Object bean = applyBeanPostProcessorsBeforeInstantiation(beanDefinition.getBeanClass(), beanName);
         if (bean != null) {
             // before?????
+            // todo: 这个地方如果这样做的话？生命周期会出现问题吧？因为中间还有一个beforeInitialization
             bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
         }
         return bean;
@@ -169,6 +189,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return wrappedBean;
     }
 
+    /**
+     * 把aware的对象注入进去
+     * @param beanName
+     * @param bean
+     * @param beanDefinition
+     */
     private void injectAwareBean(String beanName, Object bean, BeanDefinition beanDefinition) {
         if (!(bean instanceof Aware)) {
             return;

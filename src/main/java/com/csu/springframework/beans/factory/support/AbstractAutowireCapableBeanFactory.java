@@ -242,12 +242,22 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     }
 
     protected Object createBeanInstance(BeanDefinition beanDefinition, String beanName, Object[] args) {
+        /**
+         * 这里的职责其实应该放到
+         * getInstantiationStrategy().instantiate()
+         * 这个方法里面
+         */
         Constructor constructorToUser = null;
         Class<?> beanClass = beanDefinition.getBeanClass();
         Constructor<?>[] constructors = beanClass.getDeclaredConstructors();
 
         for (Constructor<?> constructor : constructors) {
-            //todo remember add more condition
+            //todo: remember add more condition
+            /**
+             * 这里只添加了构造函数的参数列表长度和传入参数的列表长度相同的情况
+             * 还需要判断：
+             * 每一个args的类型和期望的类型是否相同
+             */
             if (args != null && constructor.getParameterTypes().length == args.length) {
                 constructorToUser = constructor;
                 break;

@@ -2,6 +2,10 @@ package com.csu.springframework.beans.factory.config;
 
 import com.csu.springframework.beans.PropertyValues;
 
+/**
+ * 早期spring是使用xml文件配置的
+ * 这个其实就是把xml文件中的内容映射到这个里面
+ */
 public class BeanDefinition {
 
     private Class<?> beanClass;

@@ -20,11 +20,23 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     // 三级缓存
     private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>();
 
+    // 需要销毁的bean的集合
     private final Map<String, DisposableBean> disposableBeans = new ConcurrentHashMap<>();
+
     protected static final Object NULL_OBJECT = new Object();
 
     @Override
     public Object getSingleton(String beanName) {
+        /**
+         * 这个的思路是这样的：
+         * 1. 一级缓存存放普通的bean
+         * 2. 二级缓存存放aop代理的bean
+         * 3. 三级缓存存放beanFactory的bean
+         *
+         * 如果一级缓存没有，就去二级缓存中去找
+         * 二级缓存中没有，就去三级缓存中寻找
+         * 然后把三级缓存，通过FactoryBean生成的bean存放到一级缓存中
+         */
         Object singletonObject = singleObjects.get(beanName);
         if (singletonObject == null) {
             singletonObject = earlySingletonObjects.get(beanName);

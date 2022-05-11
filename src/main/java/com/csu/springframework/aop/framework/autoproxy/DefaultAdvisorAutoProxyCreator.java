@@ -43,6 +43,7 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 
     /**
      * instantiation 创建这个对象之前
+     * new之前
      * initialization
      * @param clazz
      * @param beanName

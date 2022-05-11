@@ -22,18 +22,20 @@ public class JDKDynamicAopProxy implements AopProxy, InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        ReflectiveMethodInvocation invocation = new ReflectiveMethodInvocation(
+                support.getTargetSource().getTarget(),
+                method,
+                args
+        );
+
         if (support.getMethodMatcher().matches(method, support.getTargetSource().getTarget().getClass())) {
+            // 在这里get到interceptor，包括beforeAdvice
             MethodInterceptor methodInterceptor = support.getMethodInterceptor();
-            return methodInterceptor.invoke(
-                    new ReflectiveMethodInvocation(
-                            support.getTargetSource().getTarget(),
-                            method,
-                            args
-                    )
-            );
+            return methodInterceptor.invoke(invocation);
         }
+
         // ?????
         // 为什么不是method.invoke(proxy, args)
-        return method.invoke(support.getTargetSource().getTarget(), args);
+        return invocation.proceed();
     }
 }

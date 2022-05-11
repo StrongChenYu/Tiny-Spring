@@ -32,6 +32,18 @@ public class Cglib2AopProxy implements AopProxy {
             this.support = advisedSupport;
         }
 
+        /**
+         * 这个代理本质上还是取调用别的interceptor方法
+         * 框架封装了不同的interceptor方法
+         * 然后用户只需要实现这几个interceptor方法
+         * 然后代理的时候，就会调用这几个接口
+         * @param obj
+         * @param method
+         * @param args
+         * @param proxy
+         * @return
+         * @throws Throwable
+         */
         @Override
         public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
             CglibMethodInvocation methodInvocation = new CglibMethodInvocation(

@@ -16,6 +16,8 @@ import com.csu.springframework.core.io.convert.ConversionService;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
 
@@ -26,10 +28,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         Object bean = null;
 
         try {
+            resolveBeforeInstantiation(beanName, beanDefinition);
+
             //create bean
             bean = createBeanInstance(beanDefinition, beanName, args);
 
-            /**
+            /*
              * 这个地方有问题感觉
              * 因为进入if后的逻辑明显是
              * 判断有无AOP的类
@@ -40,11 +44,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             if (beanDefinition.isSingleton()) {
                 Object finalBean = bean;
                 // getEarlyBeanReference函数会生成一个代理类
-                // 这个地方会把对象放到三级缓存里面
+                /*
+                 * 这个地方主要是为了处理代理对象的问题
+                 */
                 addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, beanDefinition, finalBean));
             }
 
-            /**
+            /*
              * 这个地方在控制在初始化之后，是否要进行属性的注入
              * 如果不能的话就直接返回这个bean了
              * 这里返回的bean全部都是初始化的bean
@@ -55,19 +61,19 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 return bean;
             }
 
-            /**
+            /*
              * 那么这个函数就是填充属性之前的动作了
              * 典型的作用：
              * 1. 处理@Value, @Autowired, @Qualifier 注解
              */
             applyBeanPostProcessorsBeforeApplyPropertyValues(beanName, bean, beanDefinition);
 
-            /**
+            /*
              * 这里的含义根据函数名称可以看出是在给bean填充属性
              */
             applyPropertyValues(beanName, bean, beanDefinition);
 
-            /**
+            /*
              * 到这里的时候bean已经实例化成功了
              * 并且bean中所有的属性都会填充上了
              * 那么下一步就是初始化之后做的事情了
@@ -142,19 +148,16 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     }
 
     /**
-     * todo: 需要调用beforeInstantiation类型的beanPostProcessor
      * @param beanName
      * @param beanDefinition
      * @return
      */
     private Object resolveBeforeInstantiation(String beanName, BeanDefinition beanDefinition) {
-        Object bean = applyBeanPostProcessorsBeforeInstantiation(beanDefinition.getBeanClass(), beanName);
-        if (bean != null) {
-            // before?????
-            // todo: 这个地方如果这样做的话？生命周期会出现问题吧？因为中间还有一个beforeInitialization
-            bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
-        }
-        return bean;
+        //        if (bean != null) {
+//            // before?????
+//            bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+//        }
+        return applyBeanPostProcessorsBeforeInstantiation(beanDefinition.getBeanClass(), beanName);
     }
 
     private Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
@@ -298,7 +301,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     }
 
     protected Object createBeanInstance(BeanDefinition beanDefinition, String beanName, Object[] args) {
-        /**
+        /*
          * 这里的职责其实应该放到
          * getInstantiationStrategy().instantiate()
          * 这个方法里面
@@ -308,8 +311,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         Constructor<?>[] constructors = beanClass.getDeclaredConstructors();
 
         for (Constructor<?> constructor : constructors) {
-            //todo: remember add more condition
-            /**
+            /*
              * 这里只添加了构造函数的参数列表长度和传入参数的列表长度相同的情况
              * 还需要判断：
              * 每一个args的类型和期望的类型是否相同
@@ -322,6 +324,23 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return getInstantiationStrategy().instantiate(beanDefinition, beanName, constructorToUser, args);
     }
 
+    private boolean IfConstructorMatch(Constructor<?> constructor, Object[] args) {
+        Class<?>[] types = constructor.getParameterTypes();
+        if (args == null) {
+            return types.length == 0;
+        }
+
+        if (args.length != types.length) {
+            return false;
+        }
+
+        for (int i = 0; i < args.length; i++) {
+            if (!types[0].isAssignableFrom(args.getClass())) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public InstantiationStrategy getInstantiationStrategy() {
         return instantiationStrategy;
@@ -365,5 +384,15 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
     }
 
+    public static void main(String[] args) {
+        Object o1 = new Object();
+
+        List<Integer> o2 = new ArrayList<>();
+
+        // can o1 = o2?
+        System.out.println(o1.getClass().isAssignableFrom(o2.getClass()));
+        // can o2 = o1?
+        System.out.println(o2.getClass().isAssignableFrom(o1.getClass()));
+    }
 
 }

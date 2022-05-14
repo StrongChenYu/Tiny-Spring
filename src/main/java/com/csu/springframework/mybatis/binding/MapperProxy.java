@@ -12,10 +12,12 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     private static final long serialVersionUID = -6424540398559729838L;
     private SqlSession sqlSession;
     private Class<T> mapperInterfaces;
+    private final Map<Method, MapperMethod> methodCache;
 
-    public MapperProxy(SqlSession sqlSession, Class<T> mapperInterfaces) {
+    public MapperProxy(SqlSession sqlSession, Class<T> mapperInterfaces, Map<Method, MapperMethod> methodCache) {
         this.sqlSession = sqlSession;
         this.mapperInterfaces = mapperInterfaces;
+        this.methodCache = methodCache;
     }
 
     @Override

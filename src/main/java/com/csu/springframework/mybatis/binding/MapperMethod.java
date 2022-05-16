@@ -22,7 +22,7 @@ public class MapperMethod {
         switch (sqlCommand.sqlCommandType) {
             case INSERT:
             case SELECT:
-                sqlSession.selectOne("test sql statement", args);
+                return sqlSession.selectOne(sqlCommand.getName(), args);
             case UPDATE:
             case DELETE:
             default:

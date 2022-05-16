@@ -1,6 +1,8 @@
 package com.csu.springframework.test.mybatis.dao;
 
+import com.csu.springframework.test.mybatis.po.User;
+
 public interface UserDao {
 
-    void queryUserInfoById();
+    User queryUserInfoById(Long id);
 }

@@ -5,7 +5,11 @@ import com.csu.springframework.mybatis.binding.MapperRegistry;
 import com.csu.springframework.mybatis.builder.xml.XMLConfigBuilder;
 import com.csu.springframework.mybatis.io.Resources;
 import com.csu.springframework.mybatis.session.SqlSession;
+import com.csu.springframework.mybatis.session.SqlSessionFactory;
+import com.csu.springframework.mybatis.session.SqlSessionFactoryBuilder;
 import com.csu.springframework.mybatis.session.defaults.DefaultSqlSessionFactory;
+import com.csu.springframework.test.mybatis.dao.UserDao;
+import com.csu.springframework.test.mybatis.po.User;
 import org.dom4j.Element;
 import org.junit.Test;
 
@@ -31,10 +35,12 @@ public class ApiTest {
 
     @Test
     public void test_XMlReader() throws Exception {
-        Reader reader = Resources.getResourceAsReader("mybatis/mybatis.xml");
-        XMLConfigBuilder builder = new XMLConfigBuilder(reader);
-        Element root = builder.getRoot();
-        builder.environmentsElement(root.element("environments"));
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(Resources.getResourceAsReader("mybatis/mybatis.xml"));
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+
+        UserDao userDao = sqlSession.getMapper(UserDao.class);
+        User user = userDao.queryUserInfoById(0L);
+        System.out.println(user.toString());
     }
 
 }

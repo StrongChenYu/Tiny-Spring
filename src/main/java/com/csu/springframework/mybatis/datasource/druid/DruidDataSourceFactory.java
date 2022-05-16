@@ -28,7 +28,7 @@ public class DruidDataSourceFactory implements DateSourceFactory {
         // 这个数据库的用户名
         dataSource.setUsername(properties.getProperty("username"));
         // 这个数据库用户名对应的密码
-        dataSource.setUsername(properties.getProperty("password"));
+        dataSource.setPassword(properties.getProperty("password"));
         return dataSource;
     }
 }

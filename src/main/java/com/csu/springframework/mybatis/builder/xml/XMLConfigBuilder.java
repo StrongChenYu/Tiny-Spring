@@ -18,10 +18,7 @@ import org.xml.sax.InputSource;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,7 +62,7 @@ public class XMLConfigBuilder extends BaseBuilder {
         // 这个会去获取节点下的属性是default
         // default表示选择的环境
         String environmentStr = context.attributeValue("default");
-        List<Element> environments = context.elements("environmentStr");
+        List<Element> environments = context.elements("environment");
 
         for (Element element : environments) {
             String id = element.attributeValue("id");
@@ -80,7 +77,16 @@ public class XMLConfigBuilder extends BaseBuilder {
                 // 解析DataSource
                 String dataSourceStr = element.element("dataSource").attributeValue("type");
                 Class<Object> dataSourceClass = typeAliasRegistry.resolveAlias(dataSourceStr);
+
+                List<Element> propertiesEles = element.element("dataSource").elements("property");
+
+                Properties properties = new Properties();
+                for (Element propertiesEle : propertiesEles) {
+                    properties.setProperty(propertiesEle.attributeValue("name"), propertiesEle.attributeValue("value"));
+                }
+
                 DruidDataSourceFactory druidDataSourceFactory = (DruidDataSourceFactory) dataSourceClass.newInstance();
+                druidDataSourceFactory.setProperties(properties);
                 DataSource dataSource = druidDataSourceFactory.getDataSource();
 
                 // 建造者模式构造一个environment

@@ -15,6 +15,7 @@ public class MappedStatement {
 //    select `user_id`, `name`, `sex`, `age`, `salary`, `borthday`, `face`
 //    from `user`
 //   </select>
+    // 5.16 准确来说应该是interfaceName.findAll
     private String id;
     // 语句的类型
     private SqlCommandType sqlCommandType;

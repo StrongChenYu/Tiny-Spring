@@ -2,9 +2,15 @@ package com.csu.springframework.test.mybatis;
 
 import com.csu.springframework.context.support.ClassPathXmlApplicationContext;
 import com.csu.springframework.mybatis.binding.MapperRegistry;
+import com.csu.springframework.mybatis.builder.xml.XMLConfigBuilder;
+import com.csu.springframework.mybatis.io.Resources;
 import com.csu.springframework.mybatis.session.SqlSession;
 import com.csu.springframework.mybatis.session.defaults.DefaultSqlSessionFactory;
+import org.dom4j.Element;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.io.Reader;
 
 public class ApiTest {
 
@@ -20,14 +26,15 @@ public class ApiTest {
 
     @Test
     public void test_MapperProxyFactory() {
-        MapperRegistry registry = new MapperRegistry();
-        registry.addMapper(UserDao.class);
 
-        DefaultSqlSessionFactory factory = new DefaultSqlSessionFactory(registry);
-        SqlSession sqlSession = factory.openSession();
+    }
 
-        UserDao mapper = registry.getMapper(UserDao.class, sqlSession);
-        mapper.queryByUserName("");
+    @Test
+    public void test_XMlReader() throws Exception {
+        Reader reader = Resources.getResourceAsReader("mybatis/mybatis.xml");
+        XMLConfigBuilder builder = new XMLConfigBuilder(reader);
+        Element root = builder.getRoot();
+        builder.environmentsElement(root.element("environments"));
     }
 
 }

@@ -10,6 +10,13 @@ import com.csu.springframework.mybatis.type.TypeAliasRegistry;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 把配置文件中的所有信息映射到这个类里面
+ * 包括
+ * 1. environment配置
+ * 2. mapper配置
+ * ....
+ */
 public class Configuration {
 
     protected Environment environment;
@@ -21,6 +28,7 @@ public class Configuration {
 //    select `user_id`, `name`, `sex`, `age`, `salary`, `borthday`, `face`
 //    from `user`
 //   </select>
+    // 这个mapperStatement单纯的只是映射
     private final Map<String, MappedStatement> mappedStatements = new HashMap<>();
 
     private final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();

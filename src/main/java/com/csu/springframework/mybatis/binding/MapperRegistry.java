@@ -45,6 +45,7 @@ public class MapperRegistry {
     }
 
     public <T> void addMapper(Class<T> type) {
+        // 必须是interface
         if (type.isInterface()) {
             if (hasMapper(type)) {
                 throw new RuntimeException("Type " + type + " is already known to the MapperRegistry");

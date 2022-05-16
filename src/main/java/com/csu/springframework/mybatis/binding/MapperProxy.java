@@ -10,13 +10,13 @@ import java.util.Map;
 public class MapperProxy<T> implements InvocationHandler, Serializable {
 
     private static final long serialVersionUID = -6424540398559729838L;
-    private SqlSession sqlSession;
-    private Class<T> mapperInterfaces;
+    private final SqlSession sqlSession;
+    private final Class<T> mapperInterface;
     private final Map<Method, MapperMethod> methodCache;
 
-    public MapperProxy(SqlSession sqlSession, Class<T> mapperInterfaces, Map<Method, MapperMethod> methodCache) {
+    public MapperProxy(SqlSession sqlSession, Class<T> mapperInterface, Map<Method, MapperMethod> methodCache) {
         this.sqlSession = sqlSession;
-        this.mapperInterfaces = mapperInterfaces;
+        this.mapperInterface = mapperInterface;
         this.methodCache = methodCache;
     }
 
@@ -27,7 +27,24 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
             return method.invoke(this, args);
         } else {
             // 代理逻辑
-            return sqlSession.selectOne("");
+            return cacheMapperMethod(method).execute(sqlSession, args);
         }
     }
+
+    /**
+     * 去缓存中寻找mapperMethod
+     * 如果没有找到就new一个
+     * @param method
+     * @return
+     */
+    private MapperMethod cacheMapperMethod(Method method) {
+        MapperMethod mapperMethod = methodCache.get(method);
+        if (mapperMethod == null) {
+            mapperMethod = new MapperMethod(sqlSession.getConfiguration(), mapperInterface, method);
+            methodCache.put(method, mapperMethod);
+        }
+        return mapperMethod;
+    }
+
+
 }

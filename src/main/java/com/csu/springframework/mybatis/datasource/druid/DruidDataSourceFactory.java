@@ -1,7 +1,7 @@
 package com.csu.springframework.mybatis.datasource.druid;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.csu.springframework.mybatis.datasource.DateSourceFactory;
+import com.csu.springframework.mybatis.datasource.DataSourceFactory;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -9,7 +9,7 @@ import java.util.Properties;
 /**
  * 阿里巴巴的数据库连接池
  */
-public class DruidDataSourceFactory implements DateSourceFactory {
+public class DruidDataSourceFactory implements DataSourceFactory {
 
     private Properties properties;
 

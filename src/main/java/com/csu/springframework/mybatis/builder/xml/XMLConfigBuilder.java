@@ -1,6 +1,7 @@
 package com.csu.springframework.mybatis.builder.xml;
 
 import com.csu.springframework.mybatis.builder.BaseBuilder;
+import com.csu.springframework.mybatis.datasource.DataSourceFactory;
 import com.csu.springframework.mybatis.datasource.druid.DruidDataSourceFactory;
 import com.csu.springframework.mybatis.io.Resources;
 import com.csu.springframework.mybatis.mapping.BoundSql;
@@ -85,9 +86,9 @@ public class XMLConfigBuilder extends BaseBuilder {
                     properties.setProperty(propertiesEle.attributeValue("name"), propertiesEle.attributeValue("value"));
                 }
 
-                DruidDataSourceFactory druidDataSourceFactory = (DruidDataSourceFactory) dataSourceClass.newInstance();
-                druidDataSourceFactory.setProperties(properties);
-                DataSource dataSource = druidDataSourceFactory.getDataSource();
+                DataSourceFactory dataSourceFactory = (DataSourceFactory) dataSourceClass.newInstance();
+                dataSourceFactory.setProperties(properties);
+                DataSource dataSource = dataSourceFactory.getDataSource();
 
                 // 建造者模式构造一个environment
                 Environment environment = new Environment.Builder(id)

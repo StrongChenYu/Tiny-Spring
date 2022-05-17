@@ -58,6 +58,7 @@ public class DefaultSqlSession implements SqlSession {
 
             return resultList.get(0);
         } catch (Exception e) {
+            // todo: 这个连接到底关不关？
             e.printStackTrace();
             return null;
         }

@@ -23,6 +23,8 @@ public class PooledState {
     protected long accumulatedCheckOutTime = 0;
     // 过期的连接数量
     protected long claimedOverdueConnectionOut = 0;
+    // checkout的时间大于规定的checkout规定的connection的checkout时间累计
+    protected long accumulatedCheckoutTimeOfOverdueConnections = 0;
 
     // 总等待时间
     protected long accumulatedWaitTime = 0;

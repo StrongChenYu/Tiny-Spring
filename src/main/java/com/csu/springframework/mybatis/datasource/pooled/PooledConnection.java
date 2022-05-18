@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Objects;
 
 /**
  * 因为这个地方需要拦截Connection.close()方法
@@ -22,11 +21,11 @@ public class PooledConnection implements InvocationHandler {
     private Connection realConnection;
     private Connection proxyConnection;
     // 从连接池中取出的时间
-    private long checkoutTimeStamp;
+    private long checkoutTime;
     // 创建时间
-    private long createdTimeStamp;
+    private long createdTime;
     // 上次使用时间
-    private long lastUsedTimeStamp;
+    private long lastUsedTime;
     // 连接池类型编码
     private int connectionTypeCode;
     // 连接是否可用
@@ -37,8 +36,8 @@ public class PooledConnection implements InvocationHandler {
         this.realConnection = connection;
 
         this.hashCode = connection.hashCode();
-        this.createdTimeStamp = System.currentTimeMillis();
-        this.lastUsedTimeStamp = System.currentTimeMillis();
+        this.createdTime = System.currentTimeMillis();
+        this.lastUsedTime = System.currentTimeMillis();
         this.valid = true;
         // Connection是一个代理
         this.proxyConnection = (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), INTERFACES, this);
@@ -89,7 +88,6 @@ public class PooledConnection implements InvocationHandler {
     }
 
     public int getConnectionTypeCode() {
-        // 这个type像是记录这个connection的状态
         return connectionTypeCode;
     }
 
@@ -97,38 +95,38 @@ public class PooledConnection implements InvocationHandler {
         this.connectionTypeCode = connectionTypeCode;
     }
 
-    public long getCreatedTimeStamp() {
-        return createdTimeStamp;
+    public long getCreatedTime() {
+        return createdTime;
     }
 
-    public void setCreatedTimeStamp(long createdTimeStamp) {
-        this.createdTimeStamp = createdTimeStamp;
+    public void setCreatedTime(long createdTime) {
+        this.createdTime = createdTime;
     }
 
-    public long getLastUsedTimeStamp() {
-        return lastUsedTimeStamp;
+    public long getLastUsedTime() {
+        return lastUsedTime;
     }
 
-    public void setLastUsedTimeStamp(long lastUsedTimeStamp) {
-        this.lastUsedTimeStamp = lastUsedTimeStamp;
+    public void setLastUsedTime(long lastUsedTime) {
+        this.lastUsedTime = lastUsedTime;
     }
 
     public long getTimeElapsedSinceLastUse() {
         // 获取从上一次使用完之后的时间
-        return System.currentTimeMillis() - lastUsedTimeStamp;
+        return System.currentTimeMillis() - lastUsedTime;
     }
 
     public long getAge() {
         // 获取从创建开始的时间
-        return System.currentTimeMillis() - createdTimeStamp;
+        return System.currentTimeMillis() - createdTime;
     }
 
-    public long getCheckoutTimeStamp() {
-        return checkoutTimeStamp;
+    public long getCheckoutTime() {
+        return System.currentTimeMillis() - this.checkoutTime;
     }
 
-    public void setCheckoutTimeStamp(long checkoutTimeStamp) {
-        this.checkoutTimeStamp = checkoutTimeStamp;
+    public void setCheckoutTime(long checkoutTime) {
+        this.checkoutTime = checkoutTime;
     }
 
     @Override

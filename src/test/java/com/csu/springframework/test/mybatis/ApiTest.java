@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.concurrent.CountDownLatch;
 
 public class ApiTest {
 
@@ -39,10 +40,20 @@ public class ApiTest {
         SqlSession sqlSession = sqlSessionFactory.openSession();
 
         UserDao userDao = sqlSession.getMapper(UserDao.class);
-        for (int i = 0; i < 100; i++) {
-            User user = userDao.queryUserInfoById(0L);
-            System.out.println(user);
+        int n = 100;
+        CountDownLatch countDownLatch = new CountDownLatch(n);
+        for (int i = 0; i < n; i++) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    User user = userDao.queryUserInfoById(0L);
+                    countDownLatch.countDown();
+                    System.out.println(user);
+                }
+            }).start();
         }
+        countDownLatch.await();
+        System.out.println("finish test");
     }
 
 }

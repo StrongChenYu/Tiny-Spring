@@ -33,6 +33,7 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public <T> T selectOne(String statement, Object parameter) {
+        Connection conn = null;
         try {
             // 这里调用各种方法去get封装的对象
             // 这个statement其实是statement的Id
@@ -43,8 +44,8 @@ public class DefaultSqlSession implements SqlSession {
             // get一个connection
             BoundSql boundSql = mappedStatement.getBoundSql();
 
-            Connection connection = environment.getDataSource().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(boundSql.getSql());
+            conn = environment.getDataSource().getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(boundSql.getSql());
 
             //把preparedStatement中的？号填满
             // todo: this is just for test
@@ -61,6 +62,13 @@ public class DefaultSqlSession implements SqlSession {
             // todo: 这个连接到底关不关？
             e.printStackTrace();
             return null;
+        } finally {
+            // 把连接关了！！！！
+            try {
+                conn.close();
+            } catch (SQLException exception) {
+                exception.printStackTrace();
+            }
         }
     }
 

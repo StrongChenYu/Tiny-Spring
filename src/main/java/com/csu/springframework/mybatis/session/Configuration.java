@@ -2,6 +2,8 @@ package com.csu.springframework.mybatis.session;
 
 import com.csu.springframework.mybatis.binding.MapperRegistry;
 import com.csu.springframework.mybatis.datasource.druid.DruidDataSourceFactory;
+import com.csu.springframework.mybatis.datasource.pooled.PooledDataSource;
+import com.csu.springframework.mybatis.datasource.pooled.PooledDataSourceFactory;
 import com.csu.springframework.mybatis.datasource.unpooled.UnPoolDataSourceFactory;
 import com.csu.springframework.mybatis.mapping.Environment;
 import com.csu.springframework.mybatis.mapping.MappedStatement;
@@ -38,7 +40,9 @@ public class Configuration {
         //添加几个别名
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
         typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
-        typeAliasRegistry.registerAlias("JNDI", UnPoolDataSourceFactory.class);
+        typeAliasRegistry.registerAlias("UNPOOLED", UnPoolDataSourceFactory.class);
+        typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
+
     }
 
     // 下面四个是委托方法，有关UserDao之类的类

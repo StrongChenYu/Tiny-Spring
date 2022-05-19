@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class UnPoolDataSourceFactory implements DataSourceFactory {
 
-    Properties properties;
+    protected Properties properties;
 
     @Override
     public void setProperties(Properties properties) {

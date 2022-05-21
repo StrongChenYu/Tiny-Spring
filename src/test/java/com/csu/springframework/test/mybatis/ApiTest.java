@@ -35,7 +35,17 @@ public class ApiTest {
     }
 
     @Test
-    public void test_XMlReader() throws Exception {
+    public void testSingleThreadSelect() throws Exception {
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(Resources.getResourceAsReader("mybatis/mybatis.xml"));
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+
+        UserDao userDao = sqlSession.getMapper(UserDao.class);
+        User user = userDao.queryUserInfoById(0L);
+        System.out.println(user);
+    }
+
+    @Test
+    public void testMultiThreadSelect() throws Exception {
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(Resources.getResourceAsReader("mybatis/mybatis.xml"));
         SqlSession sqlSession = sqlSessionFactory.openSession();
 

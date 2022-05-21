@@ -20,4 +20,9 @@ public interface TransactionFactory {
      * @return
      */
     Transaction newTransaction(DataSource dataSource, TransactionIsolationLevel isolationLevel, boolean autoCommit);
+
+
+    Transaction newTransaction(DataSource dataSource, TransactionIsolationLevel isolationLevel);
+
+
 }

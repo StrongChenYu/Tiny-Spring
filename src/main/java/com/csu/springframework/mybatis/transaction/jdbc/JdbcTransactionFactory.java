@@ -17,4 +17,11 @@ public class JdbcTransactionFactory implements TransactionFactory {
     public Transaction newTransaction(DataSource dataSource, TransactionIsolationLevel isolationLevel, boolean autoCommit) {
         return new JdbcTransaction(dataSource, isolationLevel, autoCommit);
     }
+
+    @Override
+    public Transaction newTransaction(DataSource dataSource, TransactionIsolationLevel isolationLevel) {
+        return new JdbcTransaction(dataSource, isolationLevel);
+    }
+
+
 }

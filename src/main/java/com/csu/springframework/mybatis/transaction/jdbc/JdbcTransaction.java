@@ -21,6 +21,15 @@ public class JdbcTransaction implements Transaction {
         this.autoCommit = autoCommit;
     }
 
+    public JdbcTransaction(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public JdbcTransaction(DataSource dataSource, TransactionIsolationLevel isolationLevel) {
+        this.dataSource = dataSource;
+        this.isolationLevel = isolationLevel;
+    }
+
     public JdbcTransaction(Connection connection) {
         this.connection = connection;
     }
@@ -35,7 +44,11 @@ public class JdbcTransaction implements Transaction {
         if (connection == null) {
             // 因为有两个构造函数
             connection = dataSource.getConnection();
-            connection.setTransactionIsolation(isolationLevel.getLevel());
+
+            if (isolationLevel != null) {
+                connection.setTransactionIsolation(isolationLevel.getLevel());
+            }
+
             connection.setAutoCommit(autoCommit);
         }
         return connection;

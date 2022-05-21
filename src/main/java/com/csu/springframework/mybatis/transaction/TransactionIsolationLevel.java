@@ -19,4 +19,15 @@ public enum TransactionIsolationLevel {
     public int getLevel() {
         return levelId;
     }
+
+    /**
+     * 这个default是为了默认的情况
+     * 但是默认的情况就不如不设置为好
+     * 直接传null
+     * @return
+     */
+    @Deprecated
+    public static TransactionIsolationLevel getDefault() {
+        return TransactionIsolationLevel.READ_COMMITTED;
+    }
 }

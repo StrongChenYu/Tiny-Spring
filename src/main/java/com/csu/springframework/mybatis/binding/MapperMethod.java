@@ -31,6 +31,7 @@ public class MapperMethod {
     }
 
     public static class SqlCommand {
+        // 这个name就是这个语句的id
         private final String name;
         private final SqlCommandType sqlCommandType;
 

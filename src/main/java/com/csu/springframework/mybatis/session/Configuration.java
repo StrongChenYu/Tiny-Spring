@@ -5,11 +5,20 @@ import com.csu.springframework.mybatis.datasource.druid.DruidDataSourceFactory;
 import com.csu.springframework.mybatis.datasource.pooled.PooledDataSource;
 import com.csu.springframework.mybatis.datasource.pooled.PooledDataSourceFactory;
 import com.csu.springframework.mybatis.datasource.unpooled.UnPoolDataSourceFactory;
+import com.csu.springframework.mybatis.executor.Executor;
+import com.csu.springframework.mybatis.executor.SimpleExecutor;
+import com.csu.springframework.mybatis.executor.result.DefaultResultSetHandler;
+import com.csu.springframework.mybatis.executor.result.ResultSetHandler;
+import com.csu.springframework.mybatis.executor.statement.PreparedStatementHandler;
+import com.csu.springframework.mybatis.executor.statement.StatementHandler;
+import com.csu.springframework.mybatis.mapping.BoundSql;
 import com.csu.springframework.mybatis.mapping.Environment;
 import com.csu.springframework.mybatis.mapping.MappedStatement;
+import com.csu.springframework.mybatis.transaction.Transaction;
 import com.csu.springframework.mybatis.transaction.jdbc.JdbcTransactionFactory;
 import com.csu.springframework.mybatis.type.TypeAliasRegistry;
 
+import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -84,5 +93,17 @@ public class Configuration {
     // set environment
     public void setEnvironment(Environment environment) {
         this.environment = environment;
+    }
+
+    public StatementHandler newStatementHandler(Executor executor, MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
+        return new PreparedStatementHandler(this, executor, ms, parameter, resultHandler, boundSql);
+    }
+
+    public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, BoundSql boundSql) {
+        return new DefaultResultSetHandler(executor, mappedStatement, boundSql);
+    }
+
+    public Executor newExecutor(Transaction transaction) {
+        return new SimpleExecutor(this, transaction);
     }
 }

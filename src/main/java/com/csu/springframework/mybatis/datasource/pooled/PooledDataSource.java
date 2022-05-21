@@ -66,9 +66,10 @@ public class PooledDataSource implements DataSource {
                 newConnection.setCreatedTime(connection.getCreatedTime());
                 newConnection.setLastUsedTime(connection.getLastUsedTime());
                 // 设置他的状态valid为false
-                newConnection.invalidate();
+//                newConnection.invalidate();
+                connection.invalidate();
 
-                state.idleConnection.add(connection);
+                state.idleConnection.add(newConnection);
                 logger.info("Returned connection " + newConnection.getRealHashCode() + " to pool.");
 
                 // 通知在这个锁上面所有等待的元素

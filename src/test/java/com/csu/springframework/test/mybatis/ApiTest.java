@@ -57,8 +57,8 @@ public class ApiTest {
                 @Override
                 public void run() {
                     User user = userDao.queryUserInfoById(0L);
-                    countDownLatch.countDown();
                     System.out.println(user);
+                    countDownLatch.countDown();
                 }
             }).start();
         }
